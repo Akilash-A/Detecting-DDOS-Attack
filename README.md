@@ -160,7 +160,6 @@ if __name__ == "__main__":
 
 ## 🔗 **Additional Resource**
 
-You can also explore another **DDOS Attack Detection** tool from [Akilash-A on GitHub](https://github.com/Akilash-A/Detecting-DDOS-Attack.git).
 
 To use it:
 
