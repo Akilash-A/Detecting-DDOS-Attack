@@ -100,7 +100,7 @@ DoS detected! IP: 192.168.1.1, Packets: 60 in 5 seconds. Time: 2024-12-02 10:30:
 Contributions are welcome! If you have suggestions or improvements, feel free to open an issue or submit a pull request.
 
 ## 🌐 **GitHub Repository**
-[Link to the GitHub Repository](https://github.com/Akilash-A/Detecting-DDOS-Attack)
+[Link to the GitHub Repository](https://github.com/Akilash-A)
 
 ---
 
