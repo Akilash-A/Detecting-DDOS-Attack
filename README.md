@@ -158,10 +158,10 @@ if __name__ == "__main__":
 
 ---
 
-## 🔗 **Additional Resource**
+## 🔗 **How to Download and Use the**
 
 
-To use it:
+To use this tool:
 
 1. Clone the repository:
    ```bash
