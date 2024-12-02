@@ -1,185 +1,108 @@
 
-# 🚨 **DoS Attack Detection and SMS Alerting System** 🚨
+# 🚨 **DoS Attack Detection & SMS Alerting System** 🚨
 
-This Python script monitors network traffic to detect potential **Denial-of-Service (DoS)** attacks by tracking IP packets. When a specific threshold of packets is detected within a time window, an **SMS alert** is sent using **Twilio**.
+## 📚 **General Overview**
 
----
+This Python-based **DoS Attack Detection & SMS Alerting System** monitors network traffic in real-time for signs of Denial of Service (DoS) attacks and sends an **SMS alert** via Twilio when suspicious activity is detected. It's designed to work seamlessly with **Scapy** for packet sniffing and **Twilio API** for SMS notification.
 
-## 🛠️ **Prerequisites** 
+### 💡 **Key Features**
+1. **Real-time Monitoring**: Uses Scapy to sniff network packets in real-time.
+2. **DoS Attack Detection**: Detects and triggers alerts based on packet counts from specific IPs within a defined window.
+3. **SMS Alerts**: Sends an SMS alert via Twilio when suspicious activity (DoS attack) is detected.
+4. **Customizable Detection Parameters**: You can set the packet threshold and detection window as per your requirements.
+5. **Simple Setup**: Easy to deploy with clear instructions.
 
-Before running the script, make sure you have the following:
+## 🛠️ **How to Setup & Use**
 
-- **Python 3.x** installed 🐍
-- **Scapy** library for packet sniffing: Install it using `pip install scapy` 📦
-- **Twilio** library for sending SMS: Install it using `pip install twilio` 📦
-- A **Twilio account** to generate the Account SID and Auth Token 🏢
+### 1. **Clone the Repository**
 
----
+First, clone the project repository:
 
-## 📝 **Script Overview** 
-
-### 🌐 **Twilio Credentials**
-
-You will need the following credentials to send an SMS using Twilio:
-
-- **ACCOUNT_SID**: Your Twilio Account SID
-- **AUTH_TOKEN**: Your Twilio Auth Token
-- **TWILIO_PHONE_NUMBER**: Your Twilio phone number 📱
-- **TO_PHONE_NUMBER**: The recipient's phone number 📞
-
-### 📊 **Detection Parameters**
-
-The script uses the following parameters to detect **DoS attacks**:
-
-- **PACKET_THRESHOLD**: The number of packets that need to be received within the `DETECTION_WINDOW` to trigger an alert. (default: 50 packets) ⚡
-- **DETECTION_WINDOW**: The time window (in seconds) within which the packets are counted. (default: 5 seconds) ⏱️
-
----
-
-## 💻 **Functionality**
-
-1. **Packet Sniffing**: The script listens for incoming packets using **Scapy's** `sniff` function 🔍.
-2. **Detection Logic**: It counts the number of packets from each unique **IP address**. If a single IP sends more than the threshold number of packets within the detection window, an alert is triggered 🚨.
-3. **SMS Alerting**: When a **DoS attack** is detected, an **SMS** is sent to a specified phone number using the **Twilio API** 📲.
-
----
-
-## 🛠️ **Code Breakdown**
-
-```python
-from scapy.all import sniff
-from collections import defaultdict
-from datetime import datetime
-from twilio.rest import Client
-
-# Twilio credentials
-ACCOUNT_SID = 'ACCOUNT_SID' # Replace with your Account SID
-AUTH_TOKEN = 'AUTH_TOKEN' # Replace with your Auth Token
-TWILIO_PHONE_NUMBER = 'TWILIO_PHONE_NUMBER' # Replace with your Twilio phone number
-TO_PHONE_NUMBER = 'TO_PHONE_NUMBER' # Replace with the recipient's phone number
-
-
-# Detection parameters
-PACKET_THRESHOLD = 50  # Trigger alert after 50 packets in DETECTION_WINDOW
-DETECTION_WINDOW = 5   # Time window in seconds
-
-# Initialize Twilio client
-client = Client(ACCOUNT_SID, AUTH_TOKEN)
-
-# Function to send SMS
-def send_sms_alert(message):
-    print(f"Sending SMS Alert: {message}")
-    try:
-        client.messages.create(
-            body=message,
-            from_=TWILIO_PHONE_NUMBER,
-            to=TO_PHONE_NUMBER
-        )
-        print("SMS Alert sent successfully.")
-    except Exception as e:
-        print(f"Failed to send SMS: {e}")
-
-# Packet detection function
-def detect_dos(packet_counts, start_time, pkt):
-    if 'IP' in pkt:
-        src_ip = pkt['IP'].src
-        packet_counts[src_ip] += 1
-
-        # Check detection window
-        elapsed = (datetime.now() - start_time[0]).total_seconds()
-        if elapsed > DETECTION_WINDOW:
-            for ip, count in packet_counts.items():
-                if count > PACKET_THRESHOLD:
-                    attack_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                    send_sms_alert(f"DoS detected! IP: {ip}, Packets: {count} in {DETECTION_WINDOW} seconds. Time: {attack_time}")
-            packet_counts.clear()
-            start_time[0] = datetime.now()
-
-# Main monitoring function
-def monitor_traffic():
-    packet_counts = defaultdict(int)
-    start_time = [datetime.now()]  # Use a list to allow mutable reference
-    print("Monitoring traffic for DoS attacks...")
-
-    try:
-        sniff(prn=lambda pkt: detect_dos(packet_counts, start_time, pkt), store=False)
-    except Exception as e:
-        print(f"An error occurred during packet sniffing: {e}")
-
-# Run the monitoring function
-if __name__ == "__main__":
-    monitor_traffic()
+```bash
+git clone https://github.com/Akilash-A/Detecting-DDOS-Attack.git
+cd Detecting-DDOS-Attack
 ```
 
----
+### 2. **Install Dependencies**
 
-## 📦 **How to Run**
+For Linux-based systems (Ubuntu/Debian/Fedora), use the following commands to install the necessary dependencies:
 
-1. **Install the required packages**:
-   - For **Debian/Ubuntu**:
-     ```bash
-     sudo apt install python3-pip
-     pip3 install scapy twilio
-     ```
+#### For Ubuntu/Debian:
 
-   - For **Fedora**:
-     ```bash
-     sudo dnf install python3-pip
-     pip3 install scapy twilio
-     ```
+```bash
+sudo apt update
+sudo apt install python3-pip
+sudo apt install python3-scapy
+sudo apt install python3-twilio
+```
 
-   - For **Arch Linux**:
-     ```bash
-     sudo pacman -S python-pip
-     pip install scapy twilio
-     ```
+#### For Fedora:
 
-2. **Replace the placeholder values** (`ACCOUNT_SID`, `AUTH_TOKEN`, `TWILIO_PHONE_NUMBER`, and `TO_PHONE_NUMBER`) in the script with your actual **Twilio credentials**.
+```bash
+sudo dnf install python3-pip
+sudo dnf install python3-scapy
+sudo dnf install python3-twilio
+```
 
-3. **Run the script**:
-   ```bash
-   python3 dos_detection.py
-   ```
+#### Install Python Dependencies:
 
----
+```bash
+python3 -m pip install -r requirements.txt
+```
+
+### 3. **Configure Twilio Credentials**
+
+In the Python script, replace the placeholders with your **Twilio Account SID**, **Auth Token**, **Twilio Phone Number**, and the **Recipient Phone Number**:
+
+```python
+ACCOUNT_SID = 'ACCOUNT_SID'  # Replace with your Account SID
+AUTH_TOKEN = 'AUTH_TOKEN'  # Replace with your Auth Token
+TWILIO_PHONE_NUMBER = 'TWILIO_PHONE_NUMBER'  # Replace with your Twilio phone number
+TO_PHONE_NUMBER = 'TO_PHONE_NUMBER'  # Replace with the recipient's phone number
+```
+
+### 4. **Run the Script**
+
+Execute the script to start monitoring network traffic and send alerts:
+
+```bash
+python3 ddos-attack-tool.py
+```
+
+🚀 **The system will start monitoring network traffic and send SMS alerts in case of a potential DoS attack!**
 
 ## 🔐 **Security Considerations**
 
-- Make sure to store your **Twilio credentials** securely, such as in **environment variables**, to prevent exposure 🔒.
-- Be mindful of the **rate** at which the script sends SMS alerts to avoid excessive charges or potential service disruption 💸.
+- **Environment Variables**: Store your Twilio credentials in environment variables to ensure that sensitive information isn't exposed in the code.
+- **Network Security**: Make sure you run this tool in a controlled environment and have permission to sniff network traffic.
+
+## ⚡ **Error Handling**
+
+The script includes basic error handling to ensure that the monitoring process is resilient. It catches exceptions during packet sniffing and SMS alert sending, ensuring the system continues to run smoothly.
+
+## 💡 **Potential Improvements**
+- **Multi-Network Support**: Extend the system to monitor multiple network interfaces.
+- **Improved Logging**: Implement advanced logging to capture and review attack patterns.
+- **Web Dashboard**: Develop a web interface to display the attack statistics and logs in real-time.
+
+## 📈 **Usage Example**
+
+Once the script is running, the system will continuously monitor network traffic. When an attack is detected, it will send an SMS to the configured recipient with a detailed message:
+
+```
+DoS detected! IP: 192.168.1.1, Packets: 60 in 5 seconds. Time: 2024-12-02 10:30:45
+```
+
+📱 **SMS Alert**: This SMS will be sent to the specified recipient.
+
+## 🎯 **Contributing**
+
+Contributions are welcome! If you have suggestions or improvements, feel free to open an issue or submit a pull request.
+
+## 🌐 **GitHub Repository**
+[Link to the GitHub Repository](https://github.com/Akilash-A/Detecting-DDOS-Attack)
 
 ---
 
-## 🚀 **Potential Improvements**
+🔒 **Disclaimer**: Please ensure you have proper authorization to monitor and analyze network traffic. Unauthorized packet sniffing may be illegal in some jurisdictions. Always use ethical practices when working with networking tools. 
 
-- **Automated Response**: Instead of just sending an alert, take automatic action to mitigate the **DoS attack** (e.g., block the IP) 🛡️.
-- **Improved Detection**: Introduce additional logic for more complex **DoS attack detection**, such as **SYN flood attacks** 🌊.
-- **Logging**: Implement **logging** for better tracking of detected attacks and actions taken 📜.
-
----
-
-## 🔗 **How to Download and Use the**
-
-
-To use this tool:
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/Akilash-A/Detecting-DDOS-Attack.git
-   cd Detecting-DDOS-Attack
-   ```
-
-2. Run the tool:
-   ```bash
-   python3 ddos-attack-tool.py
-   ```
-
----
-
-## 📞 **Summary**
-
-This script serves as a simple tool to detect potential **DoS attacks** and notify the administrator via **SMS**, providing a basic yet effective layer of network monitoring. It can be enhanced to address more advanced attacks and offer better responses 🔧.
-
----
-
-Stay safe and keep your network secure! 🌐🔐
